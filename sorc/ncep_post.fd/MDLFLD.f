@@ -40,6 +40,7 @@
 !   14-11-17  B ZHOU - Undetected ECHO TOP value is modified from SPVAL to -5000.
 !   15-xx-xx  S. Moorthi - reduced memory version
 !   15-11-03  S Moorthi - fix a bug in "RELATIVE HUMIDITY ON MDLSURFACES" sectio logic
+!   19-10-30  Bo CUI - REMOVE "GOTO" STATEMENT
 !
 ! USAGE:    CALL MDLFLD
 !   INPUT ARGUMENT LIST:
@@ -189,7 +190,9 @@
              ENDDO
            ENDDO
            ID(1:25) = 0
-           if(grib=="grib2" )then
+           if(grib=="grib1") then
+             CALL GRIBIT(IGET(105),LVLS(1,IGET(105)),GRID1,IM,JM)
+           else if(grib=="grib2" )then
              cfld=cfld+1
              fld_info(cfld)%ifld=IAVBLFLD(IGET(105))
 !$omp parallel do private(i,j,jj)
@@ -726,7 +729,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
 
 !   -- rain
               ze_r = 1.e-35
-              if (qqr(i,j,ll).lt.1.e-6) go to 124
+              loop124: do
+!             if (qqr(i,j,ll).lt.1.e-6) go to 124
+              if (qqr(i,j,ll).lt.1.e-6) exit loop124
 
               rain = max(r1,qqr(i,j,ll))
               ronv = (const1r*tanh((qr0 - rain)/delqr0) +        &
@@ -734,11 +739,15 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
               SLOR=(RHOd*RAIN/(TOPR*RONV))**0.25
               ze_r = 720.*ronv*ron*slor**7 ! Stoelinga Eq. 2, reflectivity
 
+              exit loop124
+              enddo loop124
 124         continue
 
 !   -- snow
               ze_s = 1.e-35
-              if (qqs(i,j,ll).lt.1.e-6) go to 125
+              loop125: do
+!             if (qqs(i,j,ll).lt.1.e-6) go to 125
+              if (qqs(i,j,ll).lt.1.e-6) exit loop125
               snow = max(r1,qqs(i,j,ll))
 !             New SONV formulation based on Fig. 7, curve_3 of Houze et al 1979
               rhoqs=RHOd*snow
@@ -753,11 +762,16 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
               IF (T(i,j,ll) .gt. 273.15)                         &
                ze_s = ze_s*(1. + 4.28*bb)
 
+
+            exit loop125
+            enddo loop125
 125         continue
 
 !   -- graupel
               ze_g = 1.e-35
-              if (qqg(i,j,ll).lt.1.e-6) go to 126
+              loop126: do
+!             if (qqg(i,j,ll).lt.1.e-6) go to 126
+              if (qqg(i,j,ll).lt.1.e-6) exit loop126
               graupel = max(r1,qqg(i,j,ll))
               rhoqg=RHOd*graupel
               gonv=1.
@@ -772,6 +786,8 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
               IF (t(i,j,ll) .gt. 273.15)                         &
                ze_g = ze_g*(1. + 4.28*bb)
 
+            exit loop126
+            enddo loop126
 126         continue
 
 !   -- total grid scale
@@ -883,7 +899,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                      GRID1(I,J) = PMID(I,J,LL)
                    ENDDO
                  ENDDO
-                if(grib=="grib2" )then
+                 if(grib=="grib1" )then
+                   ID(1:25) = 0
+                   CALL GRIBIT(IGET(001),L,GRID1,IM,JM)
+                else if(grib=="grib2" )then
                    cfld=cfld+1
                    fld_info(cfld)%ifld=IAVBLFLD(IGET(001))
                    fld_info(cfld)%lvl=LVLSXML(L,IGET(001))
@@ -911,7 +930,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    if(GRID1(I,J)<1e-20) GRID1(I,J) = 0.0
                  ENDDO
                ENDDO    
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(124),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(124))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(124))
@@ -938,7 +960,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    if(GRID1(I,J)<1e-20) GRID1(I,J) = 0.0
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(125),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(125))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(125))
@@ -965,7 +990,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    if(GRID1(I,J)<1e-20) GRID1(I,J) = 0.0
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(181),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(181))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(181))
@@ -992,7 +1020,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    if(GRID1(I,J)<1e-20) GRID1(I,J) = 0.0
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(182),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(182))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(182))
@@ -1019,7 +1050,11 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                       GRID1(I,J) = QQG(I,J,LL)
                  ENDDO
                ENDDO    
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 ID(11) = L
+                 CALL GRIBIT(IGET(415),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(415))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(415))
@@ -1048,7 +1083,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
                ID(1:25) = 0
                ID(11) = L
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(747),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(747))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(747))
@@ -1077,7 +1115,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
                ID(1:25) = 0
                ID(11) = L
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(752),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(752))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(752))
@@ -1106,7 +1147,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
                ID(1:25) = 0
                ID(11) = L
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(754),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(754))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(754))
@@ -1133,7 +1177,11 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
                ID(1:25) = 0
                ID(11) = L
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 ID(02)=129
+                 CALL GRIBIT(IGET(766),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(766))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(766))
@@ -1155,7 +1203,11 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
                ID(1:25) = 0
                ID(11) = L
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 ID(02)=129
+                 CALL GRIBIT(IGET(767),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(767))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(767))
@@ -1177,7 +1229,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                  ENDDO
                ENDDO
                CALL BOUND(GRID1,D00,H100)
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(145),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(145))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(145))
@@ -1203,7 +1258,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = CFR_RAW(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(774),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(774))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(774))
@@ -1248,7 +1306,11 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDIF
 ! CRA
                CALL BOUND(GRID1,DBZmin,DBZmax)
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 ID(02)=129
+                 CALL GRIBIT(IGET(250),L,GRID1,IM,JM) 
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(250))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(250))
@@ -1275,7 +1337,11 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = CWM(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 ID(02)=129      !--- Parameter Table 129, PDS Octet 4 = 129)
+                 CALL GRIBIT(IGET(199),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(199))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(199))
@@ -1303,7 +1369,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
                ID(1:25) = 0
                ID(02)=129      !--- Parameter Table 129, PDS Octet 4 = 129)
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 CALL GRIBIT(IGET(185),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(185))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(185))
@@ -1331,7 +1399,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
                ID(1:25) = 0
                ID(02)=129      !--- Parameter Table 129, PDS Octet 4 = 129)
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 CALL GRIBIT(IGET(186),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(186))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(186))
@@ -1358,7 +1428,11 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                  GRID1(I,J) = F_RimeF(I,J,LL)
                 ENDDO
               ENDDO
-              if(grib=="grib2" )then
+              if(grib=="grib1" )then
+                ID(1:25) = 0
+                ID(02)=129      !--- Parameter Table 129, PDS Octet 4 = 129)
+                CALL GRIBIT(IGET(187),L,GRID1,IM,JM)
+              else if(grib=="grib2" )then
                 cfld=cfld+1
                 fld_info(cfld)%ifld=IAVBLFLD(IGET(187))
                 fld_info(cfld)%lvl=LVLSXML(L,IGET(187))
@@ -1384,7 +1458,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = ZMID(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(077),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(077))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(077))
@@ -1410,7 +1487,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = T(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(002),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(002))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(002))
@@ -1436,7 +1516,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J)=T(I,J,LL)*(1.+D608*Q(I,J,LL))
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1" )then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(909),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(909))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(909))
@@ -1465,7 +1548,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = EGRID3(I,J)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                ID(1:25) = 0
+                CALL GRIBIT(IGET(003),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                 cfld=cfld+1
                 fld_info(cfld)%ifld=IAVBLFLD(IGET(003))
                 fld_info(cfld)%lvl=LVLSXML(L,IGET(003))
@@ -1502,7 +1588,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
               ID(1:25) = 0
               ID(11) = L
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                CALL GRIBIT(IGET(751),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                 cfld=cfld+1
                 fld_info(cfld)%ifld=IAVBLFLD(IGET(751))
                 fld_info(cfld)%lvl=LVLSXML(L,IGET(751))
@@ -1547,7 +1635,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                 ENDDO
               ENDDO
               IF (item > 0) then
-                if(grib=="grib2" )then
+                if(grib=="grib1") then
+                  ID(1:25) = 0
+                  CALL GRIBIT(IGET(006),L,GRID1,IM,JM)
+                else if(grib=="grib2" )then
                   cfld=cfld+1
                   fld_info(cfld)%ifld=IAVBLFLD(IGET(006))
                   fld_info(cfld)%lvl=LVLSXML(L,IGET(006))
@@ -1582,7 +1673,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = EGRID3(I,J)
                  ENDDO
                ENDDO
-               if(grib=="grib2")then
+               if(grib=="grib1") then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(004),L,GRID1,IM,JM)
+               else if(grib=="grib2")then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(004))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(004))
@@ -1608,7 +1702,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                  ENDDO
                ENDDO
                CALL BOUND(GRID1,H1M12,H99999)
-              if(grib=="grib2")then
+              if(grib=="grib1") then
+               ID(1:25) = 0
+               CALL GRIBIT(IGET(005),L,GRID1,IM,JM)
+              else if(grib=="grib2")then
                cfld=cfld+1
                fld_info(cfld)%ifld=IAVBLFLD(IGET(005))
                fld_info(cfld)%lvl=LVLSXML(L,IGET(005))
@@ -1635,7 +1732,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
                CALL BOUND(GRID1,H1M12,H99999)
                ID(11) = L
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                ID(1:25) = 0
+                CALL GRIBIT(IGET(750),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                 cfld=cfld+1
                 fld_info(cfld)%ifld=IAVBLFLD(IGET(750))
                 fld_info(cfld)%lvl=LVLSXML(L,IGET(750))
@@ -1674,7 +1774,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                  ENDDO
                ENDDO
                IF(IGET(083).GT.0 .AND. LLL.GT.0)THEN
-                if(grib=="grib2")then
+                if(grib=="grib1") then
+                  ID(1:25) = 0
+                  CALL GRIBIT(IGET(083),L,GRID1,IM,JM)
+                else if(grib=="grib2")then
                   cfld=cfld+1
                   fld_info(cfld)%ifld=IAVBLFLD(IGET(083))
                   fld_info(cfld)%lvl=LVLSXML(L,IGET(083))
@@ -1702,7 +1805,12 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID2(I,J) = VH(I,J,LL)
                  ENDDO
                ENDDO
-              if(grib=="grib2")then
+              if(grib=="grib1") then
+               ID(1:25) = 0
+               IF (IGET(007).GT.0) CALL GRIBIT(IGET(007),L,GRID1,IM,JM)
+               ID(1:25) = 0
+               IF (IGET(008).GT.0) CALL GRIBIT(IGET(008),L,GRID2,IM,JM)
+              else if(grib=="grib2")then
                cfld=cfld+1
                fld_info(cfld)%ifld=IAVBLFLD(IGET(007))
                fld_info(cfld)%lvl=LVLSXML(L,IGET(007))
@@ -1737,7 +1845,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = OMGA(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(009),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(009))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(009))
@@ -1762,7 +1873,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J)=WH(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(264),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(264))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(264))
@@ -1795,7 +1909,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = EGRID3(I,J)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(010),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(010))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(010))
@@ -1828,7 +1945,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                  ENDDO
                ENDDO
                ID(1:25) = 0
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(084),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(084))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(084))
@@ -1853,7 +1972,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                     GRID1(I,J) = Q2(I,J,LL)
                   ENDDO
                 ENDDO
-               if(grib=="grib2" )then
+                if(grib=="grib1") then
+                  ID(1:25) = 0
+                  CALL GRIBIT(IGET(011),L,GRID1,IM,JM)
+                else if(grib=="grib2" )then
                   cfld=cfld+1
                   fld_info(cfld)%ifld=IAVBLFLD(IGET(011))
                   fld_info(cfld)%lvl=LVLSXML(L,IGET(011))
@@ -1923,7 +2045,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                   GRID1(I,J) = TTND(I,J,LL)
                 ENDDO
               ENDDO
-              if(grib=="grib2" )then
+              if(grib=="grib1") then
+                ID(1:25) = 0
+                CALL GRIBIT(IGET(140),L,GRID1,IM,JM)
+              else if(grib=="grib2" )then
                 cfld=cfld+1
                 fld_info(cfld)%ifld=IAVBLFLD(IGET(140))
                 fld_info(cfld)%lvl=LVLSXML(L,IGET(140))
@@ -1949,7 +2074,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                   GRID1(I,J) = RSWTT(I,J,LL)
                 ENDDO
               ENDDO
-              if(grib=="grib2" )then
+              if(grib=="grib1") then
+                ID(1:25) = 0
+                CALL GRIBIT(IGET(040),L,GRID1,IM,JM)
+              else if(grib=="grib2" )then
                 cfld=cfld+1
                 fld_info(cfld)%ifld=IAVBLFLD(IGET(040))
                 fld_info(cfld)%lvl=LVLSXML(L,IGET(040))
@@ -1975,7 +2103,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                   GRID1(I,J) = RLWTT(I,J,LL)
                 ENDDO
               ENDDO
-              if(grib=="grib2" )then
+              if(grib=="grib1") then
+                ID(1:25) = 0
+                CALL GRIBIT(IGET(041),L,GRID1,IM,JM)
+              else if(grib=="grib2" )then
                 cfld=cfld+1
                 fld_info(cfld)%ifld=IAVBLFLD(IGET(041))
                 fld_info(cfld)%lvl=LVLSXML(L,IGET(041))
@@ -2024,7 +2155,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                   ID(18) = IFHR-IFINCR
                ENDIF
                IF(IFMIN .GE. 1)ID(18)=ID(18)*60
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 IF (ID(18).LT.0) ID(18) = 0
+                 CALL GRIBIT(IGET(078),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(078))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(078))
@@ -2076,7 +2210,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                   ID(18) = IFHR-IFINCR
                ENDIF
                IF(IFMIN .GE. 1)ID(18)=ID(18)*60
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 IF (ID(18).LT.0) ID(18) = 0
+                 CALL GRIBIT(IGET(079),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(079))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(079))
@@ -2108,7 +2245,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = O3(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 ID(11) = L
+                 CALL GRIBIT(IGET(267),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(267))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(267))
@@ -2136,7 +2276,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                  GRID1(I,J) = (1./RD)*(PMID(I,J,LL)/T(I,J,LL))*SMOKE(I,J,LL,1)
                ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(737),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(737))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(737))
@@ -2164,7 +2306,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                  GRID1(I,J) = DUST(I,J,LL,1)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(629),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(629))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(629))
@@ -2192,7 +2336,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                  GRID1(I,J) = DUST(I,J,LL,2)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(630),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(630))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(630))
@@ -2220,7 +2366,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = DUST(I,J,LL,3)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(631),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(631))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(631))
@@ -2248,7 +2396,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = DUST(I,J,LL,4)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(632),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(632))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(632))
@@ -2276,7 +2426,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = DUST(I,J,LL,5)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(633),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(633))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(633))
@@ -2303,7 +2455,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = SALT(I,J,LL,1)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(634),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(634))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(634))
@@ -2330,7 +2484,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = SALT(I,J,LL,2)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(635),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(635))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(635))
@@ -2357,7 +2513,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = SALT(I,J,LL,3)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(636),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(636))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(636))
@@ -2384,7 +2542,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = SALT(I,J,LL,4)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(637),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(637))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(637))
@@ -2411,7 +2571,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = SALT(I,J,LL,5)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(638),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(638))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(638))
@@ -2439,7 +2601,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = SUSO(I,J,LL,1)*RHOMID(I,J,LL) !lzhang ug/kg-->ug/m3
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(639),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(639))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(639))
@@ -2467,7 +2631,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = WASO(I,J,LL,1)*RHOMID(I,J,LL) !lzhang
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(640),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(640))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(640))
@@ -2495,7 +2661,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = WASO(I,J,LL,2)*RHOMID(I,J,LL) !lzhang
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(641),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(641))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(641))
@@ -2523,7 +2691,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = SOOT(I,J,LL,1)*RHOMID(I,J,LL) !lzhang
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(642),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(642))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(642))
@@ -2551,7 +2721,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = SOOT(I,J,LL,2)*RHOMID(I,J,LL) !lzhang
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(643),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(643))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(643))
@@ -2578,7 +2750,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = RHOMID(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(644),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(644))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(644))
@@ -2605,7 +2779,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = DPRES(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2" )then
+               if(grib=="grib1") then
+                 CALL GRIBIT(IGET(645),L,GRID1,IM,JM)
+               else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(645))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(645))
@@ -2746,7 +2922,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
         ENDIF
          ID(1:25) = 0
          ID(02)=129
-         if(grib=="grib2")then
+         if(grib=="grib1") then
+           CALL GRIBIT(IGET(252),LM,GRID1,IM,JM)
+         else if(grib=="grib2")then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(252))
 !$omp parallel do private(i,j,jj)
@@ -2774,7 +2952,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
         ENDDO
         ID(1:25) = 0
         ID(02)=130
-        if(grib=="grib2")then
+        if(grib=="grib1") then
+           CALL GRIBIT(IGET(581),LM,GRID1,IM,JM)
+        else if(grib=="grib2")then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(581))
 !$omp parallel do private(i,j,jj)
@@ -2800,7 +2980,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
          ENDDO
          ID(1:25) = 0
          ID(02)=129
-         if(grib=="grib2")then
+         if(grib=="grib1") then
+           CALL GRIBIT(IGET(276),LM,GRID1,IM,JM)
+         else if(grib=="grib2")then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(276))
 !$omp parallel do private(i,j,jj)
@@ -2827,7 +3009,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
          ENDDO
          ID(1:25) = 0
          ID(02)=129
-         if(grib=="grib2")then
+         if(grib=="grib1") then
+           CALL GRIBIT(IGET(277),LM,GRID1,IM,JM)
+         else if(grib=="grib2")then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(277))
 !$omp parallel do private(i,j,jj)
@@ -2856,7 +3040,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
          ENDDO
          ID(1:25) = 0
          ID(02)=129
-         if(grib=="grib2")then
+         if(grib=="grib1") then
+           CALL GRIBIT(IGET(278),LM,GRID1,IM,JM)
+         else if(grib=="grib2")then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(278))
 !$omp parallel do private(i,j,jj)
@@ -2885,7 +3071,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
             ENDDO
          ENDDO
-         if(grib=="grib2")then
+         if(grib=="grib1") then
+           ID(1:25) = 0
+           CALL GRIBIT(IGET(426),LM,GRID1,IM,JM)
+         else if(grib=="grib2")then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(426))
 !$omp parallel do private(i,j,jj)
@@ -2950,7 +3139,11 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
             ENDDO
           ENDDO
         ENDIF
-       if(grib=="grib2")then
+       if(grib=="grib1") then
+         ID(1:25) = 0
+         ID(02)=129
+         CALL GRIBIT(IGET(768),LM,GRID1,IM,JM)
+       else if(grib=="grib2")then
          cfld=cfld+1
          fld_info(cfld)%ifld=IAVBLFLD(IGET(768))
 !$omp parallel do private(i,j,jj)
@@ -2978,7 +3171,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
             ENDDO
          ENDDO
          ID(02)=129
-         if(grib=="grib2")then
+         if(grib=="grib1") then
+           ID(1:25) = 0
+           CALL GRIBIT(IGET(769),LM,GRID1,IM,JM)
+         else if(grib=="grib2")then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(769))
 !$omp parallel do private(i,j,jj)
@@ -3021,7 +3217,11 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
             ENDDO
           ENDDO
         ENDIF
-        if(grib=="grib2")then
+        if(grib=="grib1") then
+          ID(1:25) = 0
+          ID(02)=130
+          CALL GRIBIT(IGET(770),LM,GRID1,IM,JM)
+        else if(grib=="grib2")then
           cfld=cfld+1
           fld_info(cfld)%ifld=IAVBLFLD(IGET(770))
 !$omp parallel do private(i,j,jj)
@@ -3131,7 +3331,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
 	END DO
 	END DO  
          ID(1:25) = 0
-        if(grib=="grib2")then
+        if(grib=="grib1") then
+	 CALL GRIBIT(IGET(180),LM,GRID1,IM,JM)
+        else if(grib=="grib2")then
          cfld=cfld+1
          fld_info(cfld)%ifld=IAVBLFLD(IGET(180))
          fld_info(cfld)%lvl=LVLSXML(1,IGET(180))
@@ -3149,7 +3351,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
           GRID1(I,J)=VIS(I,J)
         END DO
         END DO
-        if(grib=="grib2")then
+        if(grib=="grib1") then
+          ID(1:25) = 0
+          CALL GRIBIT(IGET(410),LM,GRID1,IM,JM)
+        else if(grib=="grib2")then
          cfld=cfld+1
          fld_info(cfld)%ifld=IAVBLFLD(IGET(410))
          fld_info(cfld)%lvl=LVLSXML(1,IGET(410))
@@ -3186,7 +3391,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
         ID(1:25) = 0
         ID(02)=129
         ID(11)=1000
-        if(grib=="grib2")then
+        if(grib=="grib1") then
+          CALL GRIBIT(IGET(748),LM,GRID1,IM,JM)
+        else if(grib=="grib2")then
          cfld=cfld+1
          fld_info(cfld)%ifld=IAVBLFLD(IGET(748))
          fld_info(cfld)%lvl=LVLSXML(1,IGET(748))
@@ -3223,7 +3430,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
         ID(1:25) = 0
         ID(02)=129
         ID(11)=4000
-        if(grib=="grib2")then
+        if(grib=="grib1") then
+          CALL GRIBIT(IGET(757),LM,GRID1,IM,JM)
+        else if(grib=="grib2")then
          cfld=cfld+1
          fld_info(cfld)%ifld=IAVBLFLD(IGET(757))
          fld_info(cfld)%lvl=LVLSXML(1,IGET(757))
@@ -3282,7 +3491,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
 
          CALL BOUND(GRID1,DBZmin,DBZmax)
 
-         if(grib=="grib2" )then
+         if(grib=="grib1" )then
+            ID(1:25) = 0
+            CALL GRIBIT(IGET(912),L,GRID1,IM,JM)
+              else if(grib=="grib2" )then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(912))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(912))
@@ -3308,7 +3520,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                ENDDO
                ENDDO
             ID(1:25) = 0
-            if(grib=="grib2")then
+            if(grib=="grib1") then
+              CALL GRIBIT(IGET(147),LM,GRID1,IM,JM)
+            else if(grib=="grib2")then
               cfld=cfld+1
               fld_info(cfld)%ifld=IAVBLFLD(IGET(147))
               datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -3362,7 +3576,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = EL(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2")then
+               if(grib=="grib1") then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(146),L,GRID1,IM,JM)
+               else if(grib=="grib2")then
                  cfld=cfld+1
                 fld_info(cfld)%ifld=IAVBLFLD(IGET(146))
                 fld_info(cfld)%lvl=LVLSXML(L,IGET(146))
@@ -3389,7 +3606,10 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    GRID1(I,J) = RICHNO(I,J,LL)
                  ENDDO
                ENDDO
-               if(grib=="grib2")then
+               if(grib=="grib1") then
+                 ID(1:25) = 0
+                 CALL GRIBIT(IGET(111),L,GRID1,IM,JM)
+               else if(grib=="grib2")then
                  cfld=cfld+1
                  fld_info(cfld)%ifld=IAVBLFLD(IGET(111))
                  fld_info(cfld)%lvl=LVLSXML(L,IGET(111))
@@ -3433,7 +3653,11 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
 !                    PBLH(I,J) = PBLRI(I,J)
                   ENDDO
                 ENDDO
-                if(grib=="grib2" )then
+                if(grib=="grib1") then
+                  ID(1:25) = 0
+!	    	ID(02)=129
+                  CALL GRIBIT(IGET(289),LM,GRID1,IM,JM)
+                else if(grib=="grib2" )then
                   Cfld=cfld+1
                   fld_info(cfld)%ifld=IAVBLFLD(IGET(289))
 !$omp parallel do private(i,j,jj)
@@ -3563,8 +3787,15 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                    ENDDO
                  ENDDO
 
+!        write(0,*) 'min, max of GRID1 (u comp transport wind): ', minval(grid1),maxval(grid1)
                IF(IGET(389) > 0)THEN
-                if(grib=='grib2') then
+                if(grib=='grib1') then
+                  ID(1:25) = 0
+                  CALL GRIBIT(IGET(389),LM,GRID1,IM,JM)
+!        write(0,*) 'min, max of GRID2 (v comp transport wind): ', minval(grid2),maxval(grid2)
+                  ID(1:25) = 0
+                  CALL GRIBIT(IGET(390),LM,GRID2,IM,JM)
+                else
                   cfld=cfld+1
                   fld_info(cfld)%ifld=IAVBLFLD(IGET(389))
 !$omp parallel do private(i,j,jj)
@@ -3616,7 +3847,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
 
                 ID(1:25) = 0
                 ID(02)=129
-                if(grib=='grib2') then
+                if(grib=='grib1') then
+                  CALL GRIBIT(IGET(454),LM,GRID1,IM,JM)
+                else
                   Cfld=cfld+1
                   fld_info(cfld)%ifld=IAVBLFLD(IGET(454))
 !$omp parallel do private(i,j,jj)
@@ -3636,7 +3869,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
         IF(MODELNAME.EQ.'RAPR') THEN
 !tgs - 24may17 - smooth PBLHGUST 
            if(MAPTYPE == 6) then
-             if (grib=='grib2') then
+             if(grib=='grib1') then
+                dxm = (DXVAL / 360.)*(ERAD*2.*pi)/1000. ! [m]
+             else if (grib=='grib2') then
                 dxm = (DXVAL / 360.)*(ERAD*2.*pi)/1.d6  ! [mm]
              endif
            else
@@ -3667,6 +3902,7 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
         DO 101 I=1,IM
          LPBL(I,J)=LM
          ZSFC=ZINT(I,J,NINT(LMH(I,J))+1)
+         loop101: do
          DO L=NINT(LMH(I,J)),1,-1
           IF(MODELNAME.EQ.'RAPR') THEN
            HGT=ZMID(I,J,L)
@@ -3678,10 +3914,13 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
           IF(HGT .GT.  PBLHOLD+ZSFC)THEN
            LPBL(I,J)=L+1
            IF(LPBL(I,J).GE.LP1) LPBL(I,J) = LM
-           GO TO 101
+!          GO TO 101
+           exit loop101
           END IF
          END DO
          if(lpbl(i,j)<1)print*,'zero lpbl',i,j,pblri(i,j),lpbl(i,j)
+         exit loop101
+         enddo loop101
  101   CONTINUE
        IF(MODELNAME.EQ.'RAPR') THEN
         CALL CALGUST(LPBL,PBLHGUST,GUST)
@@ -3698,7 +3937,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
          ENDDO
        ENDDO      
        ID(1:25) = 0
-       if(grib=='grib2') then
+       if(grib=='grib1') then
+        CALL GRIBIT(IGET(245),1,GRID1,IM,JM)      
+       elseif(grib=='grib2') then
         cfld=cfld+1
         fld_info(cfld)%ifld=IAVBLFLD(IGET(245))
 !$omp parallel do private(i,j,jj)
@@ -3726,7 +3967,9 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                 ENDDO
                 ID(1:25) = 0
                 ID(02)=129
-                if(grib=="grib2" )then
+                if(grib=="grib1") then
+                  CALL GRIBIT(IGET(344),LM,GRID1,IM,JM)
+                else if(grib=="grib2" )then
                   cfld=cfld+1
                   fld_info(cfld)%ifld=IAVBLFLD(IGET(344))
 !$omp parallel do private(i,j,jj)
@@ -3747,29 +3990,38 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
           DO I=1,IM
 !Initialed as 'undetected'.  Nov. 17, 2014, B. ZHOU:
 !changed from SPVAL to -5000. to distinguish missing grids and undetected 
+            loop201: do
 !           GRID1(I,J) = SPVAL      	      
             GRID1(I,J) = -5000.  !undetected initially         
             IF(IMP_PHYSICS == 8.)then ! If Thompson MP
               DO L=1,NINT(LMH(I,J))
                 IF(REF_10CM(I,J,L) > 18.3) then
                   GRID1(I,J) = ZMID(I,J,L)
-                  go to 201
+!                 go to 201
+                  exit loop201
                 ENDIF
               ENDDO
             ELSE ! if other MP than Thompson
               DO L=1,NINT(LMH(I,J))
                 IF(DBZ(I,J,L) > 18.3) then
                   GRID1(I,J) = ZMID(I,J,L)
-                  go to 201
+!                 go to 201
+                  exit loop201
                 END IF
               ENDDO
             END IF
+            exit loop201
+            enddo loop201
  201        CONTINUE
 !           if(grid1(i,j)<0.)print*,'bad echo top',  &
 !    +         i,j,grid1(i,j),dbz(i,j,1:lm)	       
           ENDDO
         ENDDO
-        if(grib=="grib2" )then
+        if(grib=="grib1") then
+         ID(1:25) = 0
+         ID(02)=129
+         CALL GRIBIT(IGET(400),LM,GRID1,IM,JM)
+        else if(grib=="grib2" )then
          cfld=cfld+1
          fld_info(cfld)%ifld=IAVBLFLD(IGET(400))
 !$omp parallel do private(i,j,jj)
