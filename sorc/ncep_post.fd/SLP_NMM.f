@@ -21,7 +21,6 @@
 !                        SO THAT THERE WAS BIT REPRODUCIBILITY BETWEEN
 !                        USING ONE AND MULTIPLE TASKS	      
 !   13-12-06  H CHUANG - REMOVE EXTRA SMOOTHING OF SLP AT THE END
-!   19-10-30  Bo CUI - REMOVE "GOTO" STATEMENT
 !
 ! USAGE:  CALL SLPSIG FROM SUBROUITNE ETA2P
 !
@@ -106,10 +105,7 @@
 !
 !***  "STDRD" REFERS TO THE "STANDARD" SLP REDUCTION SCHEME.
 !
-      loop430:do 
-      loop400:do 
-!     IF(STDRD)GO TO 400
-      IF(STDRD) exit loop400
+      IF(STDRD)GO TO 400
 !--------------------------------------------------------------------
 !***
 !***  CREATE A 3-D "HEIGHT MASK" FOR THE SPECIFIED PRESSURE LEVELS
@@ -151,27 +147,18 @@
 !***  BASED ON RELAXATION TEMPERATURES.  THE FIRST STEP IS TO
 !***  FIND THE HIGHEST LAYER CONTAINING MOUNTAINS.
 !***
-      loop220: do
       DO 210 L=LSM,1,-1
 !
-      loop210: do
       DO J=JSTA,JEND
       DO I=1,IM
-!       IF(HTMO(I,J,L).LT.0.5)GO TO 210
-        IF(HTMO(I,J,L).LT.0.5) exit loop210
+        IF(HTMO(I,J,L).LT.0.5)GO TO 210
       ENDDO
       ENDDO
 !
       LHMNT=L+1
-!     GO TO 220
-      exit loop220
-
-      exit loop210
-      enddo loop210
+      GO TO 220
   210 CONTINUE
 !
-      exit loop220
-      enddo loop220
   220 CONTINUE
       print*,'Debug in SLP: LHMNT=',LHMNT
       if ( num_procs .gt. 1 ) then
@@ -179,11 +166,8 @@
        (LHMNT,LXXX,1,MPI_INTEGER,MPI_MIN,MPI_COMM_COMP,IERR)
       LHMNT = LXXX
       end if
-    
-      loop325:do
       IF(LHMNT.EQ.LSMP1)THEN
-!       GO TO 325
-        exit loop325
+        GO TO 325
       ENDIF
       print*,'Debug in SLP: LHMNT A ALLREDUCE=',LHMNT
 !***
@@ -200,14 +184,10 @@
       KOUNT=KOUNT+1
       IMNT(KOUNT,L)=0
       JMNT(KOUNT,L)=0
-      loop240: do
-!     IF(HTMO(I,J,L).GT.0.5)GO TO 240
-      IF(HTMO(I,J,L).GT.0.5) exit loop240
+      IF(HTMO(I,J,L).GT.0.5)GO TO 240
       KMN=KMN+1
       IMNT(KMN,L)=I
       JMNT(KMN,L)=J
-      exit loop240
-      enddo loop240
   240 CONTINUE
       KMNTM(L)=KMN
   250 CONTINUE
@@ -320,7 +300,6 @@
           if(i.eq.ii.and.j.eq.jj)print*,'Debug:DONE,PSLP A S1='       &  
                ,done(i,j),PSLP(I,J)
         ELSE IF(FIS(I,J).LT.-1.0) THEN
-          loop302: do
           DO L=LM,1,-1
             IF(ZINT(I,J,L).GT.0.)THEN
               PSLP(I,J)=PINT(I,J,L)/EXP(-ZINT(I,J,L)*G                &
@@ -329,12 +308,9 @@
               if(i.eq.ii.and.j.eq.jj)print*                           &
       	      ,'Debug:DONE,PINT,PSLP A S1='                           &
                ,done(i,j),PINT(I,J,L),PSLP(I,J)
-!             GO TO 302 
-              exit loop302
+              GO TO 302 
             END IF
           END DO
-          exit loop302
-          enddo loop302
  302      CONTINUE  
         ENDIF
       ENDDO
@@ -342,18 +318,15 @@
 !
       KMM=KMNTM(LSM)
 !$omp parallel do private(gz1,gz2,i,j,lmap1,p1,p2),shared(pslp)
-
       DO 320 KM=1,KMM
       I=IMNT(KM,LSM)
       J=JMNT(KM,LSM)
-!     IF(DONE(I,J))GO TO 320
-      IF(DONE(I,J)) cycle 
+      IF(DONE(I,J))GO TO 320
       LMHIJ=LMHO(I,J)
       GZ1=FIPRES(I,J,LMHIJ)
       P1(I,J)=SPL(LMHIJ)
 !
       LMAP1=LMHIJ+1
-      loop320: do
       DO L=LMAP1,LSM
         P2=SPL(L)
         TLYR=0.5*(TPRES(I,J,L)+TPRES(I,J,L-1))
@@ -365,8 +338,7 @@
 !          if(i.eq.ii.and.j.eq.jj)print*,'Debug:PSLP A S2=',PSLP(I,J)
           DONE(I,J)=.TRUE.
           KOUNT=KOUNT+1
-!         GO TO 320
-          exit loop320
+          GO TO 320
         ENDIF
         P1(I,J)=P2
         GZ1=GZ2
@@ -380,8 +352,6 @@
 !      if(i.eq.ii.and.j.eq.jj)print*,'Debug:spl,FI,TLYR,PSLPA3='    &  
 !         ,spl(lp),FIPRES(I,J,LP),TLYR,PSLP(I,J)       
 !HC EXPERIMENT
-      exit loop320
-      enddo loop320
   320 CONTINUE
 !
 !***  WHEN SEA LEVEL IS BELOW THE LOWEST OUTPUT PRESSURE LEVEL,
@@ -398,15 +368,12 @@
 !HC MODIFICATION FOR SMALL HILL HIGH PRESSURE SITUATION
 !HC IF SURFACE PRESSURE IS CLOSER TO SEA LEVEL THAN LWOEST
 !HC OUTPUT PRESSURE LEVEL, USE SURFACE PRESSURE TO DO EXTRAPOLATION
-      exit loop325
-      enddo loop325
  325  CONTINUE
       LP=LSM
       DO 330 J=JSTA,JEND
       DO 330 I=1,IM
       if(i.eq.ii.and.j.eq.jj)print*,'Debug: with 330 loop'
-!     IF(DONE(I,J))GO TO 330
-      IF(DONE(I,J)) cycle   
+      IF(DONE(I,J))GO TO 330
       if(i.eq.ii.and.j.eq.jj)print*,'Debug: still within 330 loop'
 !HC Comment out the following line for situation with terrain 
 !HC at boundary (ie FIPRES<0)
@@ -444,15 +411,12 @@
 !--------------------------------------------------------------------
 !     SKIP THE STANDARD SCHEME.
 !--------------------------------------------------------------------
-!     GO TO 430
-      exit loop430
+      GO TO 430
 !--------------------------------------------------------------------
 !***
 !***  IF YOU WANT THE "STANDARD" ETA/SIGMA REDUCTION
 !***  THIS IS WHERE IT IS DONE.
 !***
-      exit loop400
-      enddo loop400
   400 CONTINUE
 !
 !****************************************************************
@@ -460,8 +424,6 @@
 !     EITHER METHOD.  5-POINT AVERAGE THE FIELD ON THE E-GRID.
 !****************************************************************
 !
-      exit loop430
-      enddo loop430
   430 CONTINUE
 !----------------------------------------------------------------
       RETURN

@@ -25,7 +25,6 @@
 !   13-12-06  H CHUANG - REMOVE EXTRA SMOOTHING OF SLP ITSELF  
 !                        CHANGES TO AVOID RELAXATION FOR ABOVE G GIBSING
 !                        ARE COMMENTED OUT FOR NOW
-!   19-10-30  Bo CUI - REMOVE "GOTO" STATEMENT
 !
 ! USAGE:  CALL SLPSIG FROM SUBROUITNE ETA2P
 !
@@ -120,9 +119,7 @@
 !
 !***  "STDRD" REFERS TO THE "STANDARD" SLP REDUCTION SCHEME.
 !
-      loop400: do
-!     IF(STDRD)GO TO 400
-      IF(STDRD) exit loop400
+      IF(STDRD)GO TO 400
 !--------------------------------------------------------------------
 !***
 !***  CREATE A 3-D "HEIGHT MASK" FOR THE SPECIFIED PRESSURE LEVELS
@@ -173,25 +170,15 @@
 !***  FIND THE HIGHEST LAYER CONTAINING MOUNTAINS.
 !***
       LHMNT = LSM 
-      loop220: do
       DO 210 L=LSM,1,-1
-
-        loop210: do
         DO J=JSTA,JEND
           DO I=1,IM
-!           IF(HTMO(I,J,L) < 0.5) go to 210
-            IF(HTMO(I,J,L) < 0.5) exit loop210
+            IF(HTMO(I,J,L) < 0.5) go to 210
           ENDDO
         ENDDO
         LHMNT = L+1
-!       go to 220
-        exit loop220
-        exit loop210
-        enddo loop210
+        go to 220
  210  continue
-      
-      exit loop220
-      enddo loop220
  220  continue
 
 !      print*,'Debug in SLP: LHMNT=',LHMNT
@@ -201,10 +188,7 @@
           (LHMNT,LXXX,1,MPI_INTEGER,MPI_MIN,MPI_COMM_COMP,IERR)
         LHMNT = LXXX
       end if
-   
-      loop325: do
-!     IF(LHMNT == LSMP1) GO TO 325
-      IF(LHMNT == LSMP1) exit loop325
+      IF(LHMNT == LSMP1) GO TO 325
 
 !      print*,'Debug in SLP: LHMNT A ALLREDUCE=',LHMNT
 !***
@@ -457,7 +441,6 @@
         P1(I,J) = SPL(LMHIJ)
 !
         LMAP1 = LMHIJ+1
-        loop320:do
         DO L=LMAP1,LSM
           P2            = SPL(L)
           TLYR          = 0.5*(TPRES(I,J,L)+TPRES(I,J,L-1))
@@ -469,8 +452,7 @@
 !           if(i.eq.ii.and.j.eq.jj)print*,'Debug:PSLP A S2=',PSLP(I,J)
             DONE(I,J) = .TRUE.
             KOUNT     = KOUNT + 1
-!           go to 320
-            exit loop320
+            go to 320
           ENDIF
           P1(I,J) = P2
           GZ1     = GZ2
@@ -486,8 +468,6 @@
 !HC EXPERIMENT
 !       end if ! spval
 
-      exit loop320
-      enddo loop320
  320  CONTINUE
 !
 !***  WHEN SEA LEVEL IS BELOW THE LOWEST OUTPUT PRESSURE LEVEL,
@@ -505,8 +485,6 @@
 !HC IF SURFACE PRESSURE IS CLOSER TO SEA LEVEL THAN LWOEST
 !HC OUTPUT PRESSURE LEVEL, USE SURFACE PRESSURE TO DO EXTRAPOLATION
 
-      exit loop325
-      enddo loop325
  325  CONTINUE 
       LP = LSM
       DO J=JSTA,JEND
@@ -566,8 +544,6 @@
 !***  IF YOU WANT THE "STANDARD" ETA/SIGMA REDUCTION
 !***  THIS IS WHERE IT IS DONE.
 !***
-      exit loop400
-      enddo loop400
   400 CONTINUE
 !
 !****************************************************************

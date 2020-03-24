@@ -264,12 +264,7 @@
                  GRID1(I,J)=TSL(I,J)
                ENDDO
              ENDDO
-            if(grib=='grib1')then
-             ID(1:25)=0
-             ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(296),LP,GRID1,IM,JM)
-            elseif(grib=='grib2') then
+            if(grib=='grib2') then
              cfld=cfld+1
              fld_info(cfld)%ifld=IAVBLFLD(IGET(296))
              fld_info(cfld)%lvl=LVLSXML(LP,IGET(296))

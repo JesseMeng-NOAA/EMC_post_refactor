@@ -74,9 +74,7 @@
             END DO
          END DO
          ID(1:25) = 0
-         if(grib=='grib1') then
-          CALL GRIBIT(IGET(048),LVLS(1,IGET(048)),GRID1,IM,JM)
-         elseif(grib=='grib2') then
+         if(grib=='grib2') then
           cfld=cfld+1
           fld_info(cfld)%ifld=IAVBLFLD(IGET(048))
           datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -97,9 +95,7 @@
             END DO
          END DO
          ID(1:25) = 0
-         if(grib=='grib1') then
-           CALL GRIBIT(IGET(049),LVLS(1,IGET(049)),GRID1,IM,JM)
-         elseif(grib=='grib2') then
+         if(grib=='grib2') then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(049))
            datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -118,9 +114,7 @@
            ENDDO
          ENDDO
          ID(1:25) = 0
-         if(grib=='grib1') then
-           CALL GRIBIT(IGET(050),LVLS(1,IGET(050)),GRID1,IM,JM)
-         elseif(grib=='grib2') then
+         if(grib=='grib2') then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(050))
            datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -136,9 +130,7 @@
            ENDDO
          ENDDO
          ID(1:25) = 0
-          if(grib=='grib1') then
-          CALL GRIBIT(IGET(051),LVLS(1,IGET(051)),GRID1,IM,JM)
-         elseif(grib=='grib2') then
+         if(grib=='grib2') then
           cfld=cfld+1
           fld_info(cfld)%ifld=IAVBLFLD(IGET(051))
           datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -154,9 +146,7 @@
            ENDDO
          ENDDO
          ID(1:25) = 0
-         if(grib=='grib1') then
-          CALL GRIBIT(IGET(052),LVLS(1,IGET(052)),GRID1,IM,JM)
-         elseif(grib=='grib2') then
+         if(grib=='grib2') then
           cfld=cfld+1
           fld_info(cfld)%ifld=IAVBLFLD(IGET(052))
           datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -172,9 +162,7 @@
            ENDDO
          ENDDO
          ID(1:25) = 0
-          if(grib=='grib1') then
-          CALL GRIBIT(IGET(053),LVLS(1,IGET(053)),GRID1,IM,JM)
-         elseif(grib=='grib2') then
+         if(grib=='grib2') then
           cfld=cfld+1
           fld_info(cfld)%ifld=IAVBLFLD(IGET(053))
           datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -200,9 +188,7 @@
 !       CALL E2OUT(150,000,GRID1,GRID2,GRID1,GRID2,IM,JM)
        ID(1:25) = 0
        CALL SCLFLD(GRID1,100.,IM,JM)
-       if(grib=='grib1') then
-        CALL GRIBIT(IGET(150),LVLS(1,IGET(150)),GRID1,IM,JM)
-       elseif(grib=='grib2') then
+       if(grib=='grib2') then
         cfld=cfld+1
         fld_info(cfld)%ifld=IAVBLFLD(IGET(150))
         datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -237,9 +223,7 @@
               ENDDO
             ENDDO
        
-            if(grib=='grib1') then
-             CALL GRIBIT(IGET(266),LVLS(1,IGET(266)),GRID1,IM,JM)
-            elseif(grib=='grib2') then
+            if(grib=='grib2') then
              cfld=cfld+1
              fld_info(cfld)%ifld=IAVBLFLD(IGET(266))
              if(ITSRFC>0) then
@@ -262,9 +246,7 @@
         ENDDO
        ID(1:25) = 0
        ID(02) = 130
-       if(grib=='grib1') then
-        CALL GRIBIT(IGET(226),LVLS(1,IGET(226)),GRID1,IM,JM)
-       elseif(grib=='grib2') then
+       if(grib=='grib2') then
         cfld=cfld+1
         fld_info(cfld)%ifld=IAVBLFLD(IGET(226))
         datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -295,10 +277,7 @@
          ENDDO
        ID(1:25) = 0
        ID(02) = 130
-       if(grib=='grib1') then
-        CALL GRIBIT(IGET(227),LVLS(1,IGET(227)),                   &
-              GRID1,IM,JM)
-       elseif(grib=='grib2') then
+       if(grib=='grib2') then
         cfld=cfld+1
         fld_info(cfld)%ifld=IAVBLFLD(IGET(227))
         datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -322,9 +301,7 @@
            ENDDO
          ENDDO
          ID(1:25) = 0
-         if(grib=='grib1') then
-          CALL GRIBIT(IGET(151),LVLS(1,IGET(151)),GRID1,IM,JM)
-         elseif(grib=='grib2') then
+         if(grib=='grib2') then
           cfld=cfld+1
           fld_info(cfld)%ifld=IAVBLFLD(IGET(151))
           datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -358,9 +335,7 @@
           ENDDO
           ID(1:25) = 0
           ID(02)=133 ! Parameter Table 133
-        if(grib=='grib1') then
-           CALL GRIBIT(IGET(248),LVLS(1,IGET(248)),GRID1,IM,JM)
-          elseif(grib=='grib2') then
+          if(grib=='grib2') then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(248))
            datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)

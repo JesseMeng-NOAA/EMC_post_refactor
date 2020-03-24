@@ -43,7 +43,6 @@
 !   06-11-06 H CHUANG      - MODIFY TO OUTPUT GFS LFM FIELDS WHICH 
 !                            HAVE DIFFERENT THICKNESS AS MESO AND USE DP
 !                            RATHER THAN DZ 
-!   19-10-30  Bo CUI - REMOVE "GOTO" STATEMENT
 !     
 !     
 ! USAGE:    CALL LFMFLD(RH3310,RH6610,RH3366,PW3310)
@@ -132,7 +131,6 @@
 !     
 !        ACCULMULATE RELATIVE HUMIDITIES AND PRECIPITABLE WATER.
 !
-         loop20: do
          DO 10 L = LLMH,1,-1
 !     
 !           GET P, Z, T, AND Q AT MIDPOINT OF ETA LAYER.
@@ -154,8 +152,7 @@
 !
 !
 !           JUMP OUT OF THIS LOOP IF WE ARE ABOVE THE HIGHEST TARGET PRESSURE.
-!           IF (PM.LE.P33) GOTO 20
-            IF (PM.LE.P33) exit loop20
+            IF (PM.LE.P33) GOTO 20
 !     
 !           0.44-1.00 RELATIVE HUMIDITY.
 !            IF ((PM.LE.P10).AND.(PM.GE.P44)) THEN
@@ -185,8 +182,6 @@
 !            ENDIF
 !
  10      CONTINUE
-         exit loop20
-         enddo loop20
  20      CONTINUE
 !     
 !        NORMALIZE TO GET MEAN RELATIVE HUMIDITIES.  AT
