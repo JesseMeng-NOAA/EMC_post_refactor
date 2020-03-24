@@ -49,9 +49,8 @@
       use masks,        only: gdlat, gdlon, dx, dy
       use params_mod,   only: d00, dtr, small, erad
       use ctlblk_mod,   only: jsta_2l, jend_2u, spval, modelname, global, &
-                              jsta, jend, im, jm, jsta_m, jend_m, gdsdegr
+                              jsta, jend, im, jm, jsta_m, jend_m, gdsdegr, me
       use gridspec_mod, only: gridtype, dyval
-      use diff_module
 
       implicit none
 !
@@ -339,15 +338,10 @@
           DO I=2,IM-1
             IF(VWND(I+1,J).LT.SPVAL.AND.VWND(I-1,J).LT.SPVAL.AND.              &
      &         UWND(I,J+1).LT.SPVAL.AND.UWND(I,J-1).LT.SPVAL) THEN
-!              R2DX   = 1./(2.*DX(I,J))
-!              R2DY   = 1./(2.*DY(I,J))
-!              DVDX   = (VWND(I+1,J)-VWND(I-1,J))*R2DX
-!              DUDY   = (UWND(I,J+1)-UWND(I,J-1))*R2DY
-              U1 = UWND(I,J-1)
-              U2 = UWND(I,J+1)
-              V1 = VWND(I-1,J)
-              V2 = VWND(I+1,J)
-              CALL DVDXDUDY(U1,U2,V1,V2,DX(I,J),DY(I,J),DVDX,DUDY)
+              R2DX   = 1./(2.*DX(I,J))
+              R2DY   = 1./(2.*DY(I,J))
+              DVDX   = (VWND(I+1,J)-VWND(I-1,J))*R2DX
+              DUDY   = (UWND(I,J+1)-UWND(I,J-1))*R2DY
               UAVG   = UWND(I,J)        
 !  is there a (f+tan(phi)/erad)*u term?
               IF(MODELNAME  == 'RAPR') then
@@ -374,15 +368,10 @@
           DO I=2,IM-1
             IF(VWND(I+IHE(J),J) < SPVAL.AND.VWND(I+IHW(J),J) < SPVAL .AND.   &
      &         UWND(I,J+1) < SPVAL     .AND.UWND(I,J-1) < SPVAL) THEN
-!              R2DX   = 1./(2.*DX(I,J))
-!              R2DY   = 1./(2.*DY(I,J))
-!              DVDX   = (VWND(I+IHE(J),J)-VWND(I+IHW(J),J))*R2DX
-!              DUDY   = (UWND(I,J+1)-UWND(I,J-1))*R2DY
-              U1 = UWND(I,J-1)
-              U2 = UWND(I,J+1)
-              V1 = VWND(I+IHW(J),J)
-              V2 = VWND(I+IHE(J),J)
-              CALL DVDXDUDY(U1,U2,V1,V2,DX(I,J),DY(I,J),DVDX,DUDY)
+              R2DX   = 1./(2.*DX(I,J))
+              R2DY   = 1./(2.*DY(I,J))
+              DVDX   = (VWND(I+IHE(J),J)-VWND(I+IHW(J),J))*R2DX
+              DUDY   = (UWND(I,J+1)-UWND(I,J-1))*R2DY
               UAVG   = 0.25*(UWND(I+IHE(J),J)+UWND(I+IHW(J),J)                 &
      &               +       UWND(I,J+1)+UWND(I,J-1))
 !  is there a (f+tan(phi)/erad)*u term?
@@ -397,21 +386,16 @@
           JMT2 = JM/2+1
           TPHI = (J-JMT2)*(DYVAL/gdsdegr)*DTR
           DO I=2,IM-1         
-!            R2DX = 1./DX(I,J)
-!            R2DY = 1./DY(I,J)
+            R2DX = 1./DX(I,J)
+            R2DY = 1./DY(I,J)
             if(VWND(I,  J)==SPVAL .or. VWND(I,  J-1)==SPVAL .or. &
                VWND(I-1,J)==SPVAL .or. VWND(I-1,J-1)==SPVAL .or. &
                UWND(I,  J)==SPVAL .or. UWND(I-1,J)==SPVAL .or. &
                UWND(I,J-1)==SPVAL .or. UWND(I-1,J-1)==SPVAL) cycle
-!            DVDX = (0.5*(VWND(I,J)+VWND(I,J-1))-0.5*(VWND(I-1,J)               &
-!     &           +       VWND(I-1,J-1)))*R2DX
-!            DUDY = (0.5*(UWND(I,J)+UWND(I-1,J))-0.5*(UWND(I,J-1)               &
-!     &           +       UWND(I-1,J-1)))*R2DY
-            U1 = 0.5*(UWND(I  ,J-1)+UWND(I-1,J-1))
-            U2 = 0.5*(UWND(I  ,J  )+UWND(I-1,J  ))
-            V1 = 0.5*(VWND(I-1,J  )+VWND(I-1,J-1))
-            V2 = 0.5*(VWND(I  ,J  )+VWND(I  ,J-1))
-            CALL DVDXDUDY(U1,U2,V1,V2,DX(I,J),DY(I,J),DVDX,DUDY)
+            DVDX = (0.5*(VWND(I,J)+VWND(I,J-1))-0.5*(VWND(I-1,J)               &
+     &           +       VWND(I-1,J-1)))*R2DX
+            DUDY = (0.5*(UWND(I,J)+UWND(I-1,J))-0.5*(UWND(I,J-1)               &
+     &           +       UWND(I-1,J-1)))*R2DY
             UAVG = 0.25*(UWND(I-1,J-1)+UWND(I-1,J)                             &
      &           +       UWND(I,  J-1)+UWND(I,  J))
 !  is there a (f+tan(phi)/erad)*u term?

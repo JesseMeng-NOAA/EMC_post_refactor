@@ -62,7 +62,7 @@ LIBS     = $(WRFIO_LIB) \
            $(NETCDF_LDFLAGS)
 
 
-OBJS =  diff_module.o wrf_io_flags.o getVariable.o getIVariableN.o \
+OBJS =  wrf_io_flags.o getVariable.o getIVariableN.o \
         kinds_mod.o machine.o physcons.o \
 	native_endianness.o blockIO.o \
         retrieve_index.o ZENSUN.o CLDFRAC_ZHAO.o \
