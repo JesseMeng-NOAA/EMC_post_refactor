@@ -1102,9 +1102,7 @@ SUBROUTINE CALRAD_WCLOUD
                        id(1:25) = 0
                        id(02) = 133
                        id(8) = 175 + ixchan 
-                       if (grib=="grib1") then
-                          call gribit(igot,lvls(1,igot), grid1,im,jm)
-                       else
+                       if (grib=="grib2") then
                           cfld=cfld+1
                           fld_info(cfld)%ifld=IAVBLFLD(igot)
                           datapd(1:im,1:jend-jsta+1,cfld)=grid1(1:im,jsta:jend)
@@ -1125,9 +1123,7 @@ SUBROUTINE CALRAD_WCLOUD
                        id(1:25) = 0
                        id(02) = 133
                        id(8) = 175 + ixchan 
-                       if (grib=="grib1") then
-                          call gribit(igot,lvls(1,igot), grid1,im,jm)
-                       else
+                       if (grib=="grib2") then
                           cfld=cfld+1
                           fld_info(cfld)%ifld=IAVBLFLD(igot)
                           datapd(1:im,1:jend-jsta+1,cfld)=grid1(1:im,jsta:jend)
@@ -1149,9 +1145,7 @@ SUBROUTINE CALRAD_WCLOUD
                        id(1:25) = 0
                        id(02) = 130
                        id(8) = 240 + ixchan
-                       if (grib=="grib1") then
-                          call gribit(igot,lvls(1,igot), grid1,im,jm)
-                       else
+                       if (grib=="grib2") then
                           cfld=cfld+1
                           fld_info(cfld)%ifld=IAVBLFLD(igot)
                           datapd(1:im,1:jend-jsta+1,cfld)=grid1(1:im,jsta:jend)
@@ -1173,9 +1167,7 @@ SUBROUTINE CALRAD_WCLOUD
                         id(1:25) = 0
                         id(02) = 129
                         id(8) = 212 + ixchan
-                        if (grib=="grib1") then
-                           call gribit(igot,lvls(1,igot), grid1,im,jm)
-                        else
+                        if (grib=="grib2") then
                            cfld=cfld+1
                            fld_info(cfld)%ifld=IAVBLFLD(igot)
                            datapd(1:im,1:jend-jsta+1,cfld)=grid1(1:im,jsta:jend)
@@ -1686,8 +1678,7 @@ SUBROUTINE CALRAD_WCLOUD
                   id(02) = 2
                   id(08) = 118
                   id(09) = 109
-                  if (grib=="grib1") then
-                    call gribit(igot,11300+ixchan, grid1,im,jm)
+                  if (grib=="grib2") then
                   endif
                  endif
               enddo
@@ -1709,8 +1700,7 @@ SUBROUTINE CALRAD_WCLOUD
                   id(08) = 118
                   id(09) = 109
 !                  print*,'id8=',id(8)
-                  if (grib=="grib1") then
-                    call gribit(igot,11400+ixchan, grid1,im,jm)
+                  if (grib=="grib2") then
                   endif
                  endif
               enddo
@@ -1732,8 +1722,7 @@ SUBROUTINE CALRAD_WCLOUD
                   id(08) = 118
                   id(09) = 109
 !                  print*,'id8=',id(8)
-                  if (grib=="grib1") then
-                    call gribit(igot,11500+ixchan, grid1,im,jm)
+                  if (grib=="grib2") then
                   endif
                  endif
               enddo
@@ -1755,8 +1744,7 @@ SUBROUTINE CALRAD_WCLOUD
                   id(02) = 2
                   id(08) = 118
                   id(09) = 109
-                  if (grib=="grib1") then
-                    call gribit(igot,11600+ixchan, grid1,im,jm)
+                  if (grib=="grib2") then
                   endif
                  endif
               enddo
@@ -1778,8 +1766,7 @@ SUBROUTINE CALRAD_WCLOUD
                   id(08) = 118
                   id(09) = 109
 !                  print*,'id8=',id(8)
-                  if (grib=="grib1") then
-                    call gribit(igot,11700+ixchan, grid1,im,jm)
+                  if (grib=="grib2") then
                   endif
                  endif
               enddo
@@ -1801,8 +1788,7 @@ SUBROUTINE CALRAD_WCLOUD
                   id(08) = 118
                   id(09) = 109
 !                  print*,'id8=',id(8)
-                  if (grib=="grib1") then
-                    call gribit(igot,11800+ixchan, grid1,im,jm)
+                  if (grib=="grib2") then
                   endif
                  endif
               enddo
@@ -1824,8 +1810,7 @@ SUBROUTINE CALRAD_WCLOUD
                   id(08) = 118
                   id(09) = 109
 !                  print*,'id8=',id(8)
-                  if (grib=="grib1") then
-                    call gribit(igot,11900+ixchan, grid1,im,jm)
+                  if (grib=="grib2") then
                   endif
                  endif
               enddo
@@ -1847,8 +1832,7 @@ SUBROUTINE CALRAD_WCLOUD
                   id(08) = 118
                   id(09) = 109
 !                  print*,'id8=',id(8)
-                  if (grib=="grib1") then
-                    call gribit(igot,12000+ixchan, grid1,im,jm)
+                  if (grib=="grib2") then
                   endif
                  endif
               enddo
@@ -1868,9 +1852,7 @@ SUBROUTINE CALRAD_WCLOUD
                        id(02) = 2
                        id(08) = 118
                        id(09) = 109
-                       if(grib=="grib1") then
-                          call gribit(igot,20000+ichan, grid1,im,jm)
-                       else if(grib=="grib2" )then
+                       if(grib=="grib2") then
                           cfld=cfld+1
                           fld_info(cfld)%ifld=IAVBLFLD(igot)
                           datapd(1:im,1:jend-jsta+1,cfld)=grid1(1:im,jsta:jend)
@@ -1893,9 +1875,7 @@ SUBROUTINE CALRAD_WCLOUD
                        id(02) = 2
                        id(08) = 118
                        id(09) = 109
-                       if(grib=="grib1") then
-                          call gribit(igot,10000+ichan, grid1,im,jm)
-                       else if(grib=="grib2" )then
+                       if(grib=="grib2") then
                           cfld=cfld+1
                           fld_info(cfld)%ifld=IAVBLFLD(igot)
                           datapd(1:im,1:jend-jsta+1,cfld)=grid1(1:im,jsta:jend)
@@ -1918,9 +1898,7 @@ SUBROUTINE CALRAD_WCLOUD
                        id(02) = 2
                        id(08) = 118
                        id(09) = 109
-                       if(grib=="grib1") then
-                          call gribit(igot,3000+ichan, grid1,im,jm)
-                       else if(grib=="grib2" )then
+                       if(grib=="grib2") then
                           cfld=cfld+1
                           fld_info(cfld)%ifld=IAVBLFLD(igot)
                           datapd(1:im,1:jend-jsta+1,cfld)=grid1(1:im,jsta:jend)
@@ -1941,9 +1919,7 @@ SUBROUTINE CALRAD_WCLOUD
                        id(1:25) = 0
                        id(02) = 130
                        id(8) = 240 + ixchan 
-                       if(grib=="grib1") then
-                          call gribit(igot,lvls(1,igot), grid1,im,jm)
-                       else if(grib=="grib2" )then
+                       if(grib=="grib2") then
                           cfld=cfld+1
                           fld_info(cfld)%ifld=IAVBLFLD(igot)
                           datapd(1:im,1:jend-jsta+1,cfld)=grid1(1:im,jsta:jend)
@@ -1964,9 +1940,7 @@ SUBROUTINE CALRAD_WCLOUD
                        id(1:25) = 0
                        id(02) = 129
                        id(8) = 212 + ixchan
-                       if(grib=="grib1") then
-                          call gribit(igot,lvls(1,igot), grid1,im,jm)
-                       else if(grib=="grib2" )then
+                       if(grib=="grib2") then
                           cfld=cfld+1
                           fld_info(cfld)%ifld=IAVBLFLD(igot)
                           datapd(1:im,1:jend-jsta+1,cfld)=grid1(1:im,jsta:jend)
@@ -1991,8 +1965,7 @@ SUBROUTINE CALRAD_WCLOUD
                     id(08) = 118
                     id(09) = 109
 !                    print*,'id8=',id(8)
-                    if (grib=="grib1") then
-                     call gribit(igot,1000+ichan, grid1,im,jm)
+                    if (grib=="grib2") then
                     endif
                  endif
                  enddo
@@ -2014,8 +1987,7 @@ SUBROUTINE CALRAD_WCLOUD
                     id(08) = 118
                     id(09) = 109
 !                    print*,'id8=',id(8)
-                    if (grib=="grib1") then
-                     call gribit(igot,1300+ixchan, grid1,im,jm)
+                    if (grib=="grib2") then
                     endif
                  endif
                  enddo
@@ -2037,8 +2009,7 @@ SUBROUTINE CALRAD_WCLOUD
                     id(08) = 118
                     id(09) = 109
 !                    print*,'id8=',id(8)
-                    if (grib=="grib1") then
-                     call gribit(igot,1500+ixchan, grid1,im,jm)
+                    if (grib=="grib2") then
                     endif
                  endif
                  enddo

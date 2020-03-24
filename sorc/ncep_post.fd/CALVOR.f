@@ -49,7 +49,7 @@
       use masks,        only: gdlat, gdlon, dx, dy
       use params_mod,   only: d00, dtr, small, erad
       use ctlblk_mod,   only: jsta_2l, jend_2u, spval, modelname, global, &
-                              jsta, jend, im, jm, jsta_m, jend_m, gdsdegr
+                              jsta, jend, im, jm, jsta_m, jend_m, gdsdegr, me
       use gridspec_mod, only: gridtype, dyval
 
       implicit none

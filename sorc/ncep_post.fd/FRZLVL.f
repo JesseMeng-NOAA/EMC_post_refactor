@@ -34,7 +34,6 @@
 !   00-01-04  JIM TUCCILLO - MPI VERSION
 !   01-10-25  H CHUANG     - MODIFIED TO PROCESS HYBRID MODEL OUTPUT
 !   02-01-15  MIKE BALDWIN - WRF VERSION
-!   19-10-30  Bo CUI - REMOVE "GOTO" STATEMENT
 !     
 ! USAGE:    CALL FRZLVL(ZFRZ,RHFRZ)
 !   INPUT ARGUMENT LIST:
@@ -98,10 +97,8 @@
 !    &         delzp,dzabv,dzfr,htsfc,l,llmh,psfc,qfrz,               &
 !    &         qsat,qsfc,qsfrz,rhsfc,rhz,tsfc,                        &
 !    &         zl,zu)
-
       DO 20 J=JSTA,JEND
       DO 20 I=1,IM
-      loop20: do
          HTSFC    = FIS(I,J)*GI
          LLMH     = NINT(LMH(I,J))
          RHFRZ(I,J) = D00
@@ -152,8 +149,7 @@
             RHSFC   = AMIN1(RHSFC,1.0)
             RHFRZ(I,J)= RHSFC
             PFRZL(I,J)= PSFC
-!           GOTO 20
-            exit loop20
+            GOTO 20
          ENDIF
 !     
 !        OTHERWISE, LOCATE THE FREEZING LEVEL ALOFT.
@@ -243,12 +239,9 @@
 !               RHFRZ(I,J) = AMAX1(0.01,RHFRZ(I,J))
 !               RHFRZ(I,J) = AMIN1(RHFRZ(I,J),1.00)
                ZFRZ(I,J)  = AMAX1(0.0,ZFRZ(I,J))
-!              GOTO 20
-               exit loop20
+               GOTO 20
             ENDIF
  10      CONTINUE
-      exit loop20
-      enddo loop20
  20   CONTINUE
 !     
 !     END OF ROUTINE.

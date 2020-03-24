@@ -313,12 +313,7 @@
              ENDIF
            ENDDO
            ENDDO
-          if(grib=='grib1')then
-           ID(1:25)=0
-	   ID(10)=0
-           ID(11)=NINT(SIGO(1)*10000.)
-           CALL GRIBIT(IGET(205),1,GRID1,IM,JM)
-          elseif(grib=='grib2') then
+          if(grib=='grib2') then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(205))
             datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -335,13 +330,7 @@
              GRID1(I,J)=AKH(I,J)
            ENDDO
            ENDDO
-	  if(grib=="grib1" )then
-           ID(1:25)=0
-           ID(02)=129
-           ID(10)=0
-           ID(11)=NINT(SIGO(1)*10000.)
-	   CALL GRIBIT(IGET(243),1,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(243))
             datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -944,12 +933,7 @@
               ENDIF
             ENDDO
             ENDDO
-	  if(grib=="grib1" )then
-            ID(1:25)=0
-	    ID(10)=0
-            ID(11)=NINT(SIGO(LP+1)*10000.)
-            CALL GRIBIT(IGET(205),LP+1,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(205))
             fld_info(cfld)%lvl=LVLSXML(LP+1,IGET(205))
@@ -970,13 +954,7 @@
 	     IF(LP.EQ.(LSIG+1))GRID1(I,J)=0.0  !! NO SLIP ASSUMTION FOR CMAQ
            ENDDO
            ENDDO
-	  if(grib=="grib1" )then
-           ID(1:25)=0
-           ID(02)=129
-           ID(10)=0
-           ID(11)=NINT(SIGO(LP+1)*10000.)
-	   CALL GRIBIT(IGET(243),LP+1,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(243))
             fld_info(cfld)%lvl=LVLSXML(LP+1,IGET(243))
@@ -995,12 +973,7 @@
                GRID1(I,J)=TSL(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(206),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(206))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(206))
@@ -1020,12 +993,7 @@
                GRID1(I,J)=PTSIGO+ASIGO(LP)*(PINT(I,J,LLMH+1)-PTSIGO)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(216),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(216))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(216))
@@ -1044,12 +1012,7 @@
              ENDDO
              ENDDO
              CALL BOUND(GRID1,H1M12,H99999)
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(207),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(207))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(207))
@@ -1067,12 +1030,7 @@
                GRID1(I,J)=OSL(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(210),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(210))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(210))
@@ -1091,16 +1049,7 @@
                GRID2(I,J)=VSL(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             IF(IGET(208).GT.0) CALL GRIBIT(IGET(208),LP,GRID1,IM,JM)
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             IF(IGET(209).GT.0) CALL GRIBIT(IGET(209),LP,GRID2,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(208))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(208))
@@ -1122,12 +1071,7 @@
                GRID1(I,J)=Q2SL(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-            CALL GRIBIT(IGET(217),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(217))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(217))
@@ -1145,12 +1089,7 @@
                GRID1(I,J)=QW1(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(211),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(211))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(211))
@@ -1168,12 +1107,7 @@
                GRID1(I,J)=QI1(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(212),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(212))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(212))
@@ -1190,12 +1124,7 @@
                GRID1(I,J)=QR1(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(213),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(213))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(213))
@@ -1212,12 +1141,7 @@
                GRID1(I,J)=QS1(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(214),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(214))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(214))
@@ -1234,12 +1158,7 @@
                GRID1(I,J)=QG1(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(255),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(255))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(255))
@@ -1256,13 +1175,7 @@
                GRID1(I,J)=C1D(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-             ID(02)=129    ! Parameter Table 129
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(215),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(215))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(215))
@@ -1279,12 +1192,7 @@
                GRID1(I,J)=CFRSIG(I,J)
              ENDDO
              ENDDO
-	  if(grib=="grib1" )then
-             ID(1:25)=0
-	     ID(10)=0
-             ID(11)=NINT(ASIGO(LP)*10000.)
-             CALL GRIBIT(IGET(222),LP,GRID1,IM,JM)
-          elseif(grib=="grib2" )then
+          if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(222))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(222))

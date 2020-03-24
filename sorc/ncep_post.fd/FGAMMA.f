@@ -87,8 +87,6 @@
 !           Applied Mathematics Division                           
 !           Argonne National Laboratory                           
 !           Argonne, IL 60439                                    
- 
-!   10-30-19  Bo CUI - REMOVE "GOTO" STATEMENT
 !                                                               
 !----------------------------------------------------------------------        
       implicit none
@@ -154,7 +152,6 @@
       FACT = ONE
       N = 0
       Y = X
-      loop900: do
       IF (Y .LE. ZERO) THEN
 !----------------------------------------------------------------------     
 !  Argument is negative                                                    
@@ -168,8 +165,7 @@
                   Y = Y + ONE
                ELSE
                   RES = XINF
-!                 GO TO 900
-                  exit loop900
+                  GO TO 900
             END IF
       END IF
 !----------------------------------------------------------------------  
@@ -183,8 +179,7 @@
                   RES = ONE / Y
                ELSE
                   RES = XINF
-!                 GO TO 900
-                  exit loop900
+                  GO TO 900
             END IF
          ELSE IF (Y .LT. TWELVE) THEN
             Y1 = Y
@@ -241,8 +236,7 @@
                   RES = EXP(SUM)
                ELSE
                   RES = XINF
-!                 GO TO 900
-                  exit loop900
+                  GO TO 900
             END IF
       END IF
 !----------------------------------------------------------------------      
@@ -250,8 +244,6 @@
 !----------------------------------------------------------------------    
       IF (PARITY) RES = -RES
       IF (FACT .NE. ONE) RES = FACT / RES
-      exit loop900
-      enddo loop900
   900 fGAMMA = RES                                                       
       RETURN
 ! ---------- Last line of fGAMMA ----------                              
