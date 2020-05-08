@@ -13,6 +13,7 @@
 !     11-02-06  J. WANG ADD GRIB2 OPTION
 !     14-03-06  S. Moorthi - updated for threading and some optimization
 !     16-12-19  G.P. Lou - Added A-grid regional models
+!     20-03-25  J MENG - remove grib1
 !     
 !
 ! USAGE:    CALL MDL2THANDPV
@@ -47,7 +48,6 @@
               im, jm, jsta, jend, jsta_m, jend_m, modelname, global,gdsdegr,me
       use RQSTFLD_mod, only: iget, lvls, id, iavblfld, lvlsxml
       use gridspec_mod, only: gridtype,dyval
-
 !- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       implicit none
 !     
@@ -663,7 +663,7 @@
                  GRID2(I,J) = VTH(I,J,LP)
                ENDDO
              ENDDO
-             if(grib=='grib2') then
+             if(grib=='grib2')then
                cfld = cfld + 1
                fld_info(cfld)%ifld = IAVBLFLD(IGET(332))
                fld_info(cfld)%lvl  = LVLSXML(lp,IGET(332))
@@ -720,7 +720,7 @@
                 GRID1(I,J) = TTH(I,J,LP)              
               ENDDO
             ENDDO
-            if(grib=='grib2') then
+            if(grib=='grib2')then
               cfld = cfld + 1
               fld_info(cfld)%ifld=IAVBLFLD(IGET(334))
               fld_info(cfld)%lvl=LVLSXML(lp,IGET(334))
@@ -754,7 +754,7 @@
                  END IF
                ENDDO
              ENDDO
-           if(grib=='grib2') then
+           if(grib=='grib2')then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(335))
             fld_info(cfld)%lvl=LVLSXML(lp,IGET(335))
@@ -779,7 +779,7 @@
                  GRID1(I,J) = HMTH(I,J,LP)
                ENDDO
              ENDDO
-           if(grib=='grib2') then
+           if(grib=='grib2')then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(353))
             fld_info(cfld)%lvl=LVLSXML(lp,IGET(353))
@@ -804,7 +804,7 @@
                  GRID1(I,J) = SIGMATH(I,J,LP)
                ENDDO
              ENDDO
-           if(grib=='grib2') then
+            if(grib=='grib2') then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(351))
             fld_info(cfld)%lvl=LVLSXML(lp,IGET(351))
@@ -858,7 +858,7 @@
                  GRID1(I,J) = OTH(I,J,LP)
                ENDDO
              ENDDO
-           if(grib=='grib2') then
+             if(grib=='grib2') then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(378))
             fld_info(cfld)%lvl=LVLSXML(lp,IGET(378))
@@ -889,7 +889,7 @@
                  GRID2(I,J) = VPV(I,J,LP)
                ENDDO
             ENDDO
-           if(grib=='grib2') then
+            if(grib=='grib2') then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(336))
             fld_info(cfld)%lvl=LVLSXML(lp,IGET(336))
@@ -928,7 +928,7 @@
                 GRID1(I,J) = TPV(I,J,LP)              
               ENDDO
             ENDDO
-           if(grib=='grib2') then
+            if(grib=='grib2') then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(338))
             fld_info(cfld)%lvl=LVLSXML(lp,IGET(338))
@@ -984,7 +984,7 @@
                    GRID1(I,J) = PPV(I,J,LP)
                  ENDDO
                ENDDO
-             if(grib=='grib2') then
+               if(grib=='grib2') then
               cfld=cfld+1
               fld_info(cfld)%ifld=IAVBLFLD(IGET(340))
               fld_info(cfld)%lvl=LVLSXML(lp,IGET(340))
@@ -1012,7 +1012,7 @@
                    GRID1(I,J) = SPV(I,J,LP)
                  ENDDO
                ENDDO
-             if(grib=='grib2') then
+               if(grib=='grib2') then
               cfld=cfld+1
               fld_info(cfld)%ifld=IAVBLFLD(IGET(341))
               fld_info(cfld)%lvl=LVLSXML(lp,IGET(341))

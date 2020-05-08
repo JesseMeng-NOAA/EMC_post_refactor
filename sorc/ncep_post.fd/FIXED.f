@@ -17,6 +17,7 @@
 !   00-01-05  JIM TUCCILLO - MPI VERSION
 !   02-06-19  MIKE BALDWIN - WRF VERSION
 !   11-02-06  JUN WANG     - grib2 option
+!   20-03-25  JESSE MENG   - remove grib1
 !     
 ! USAGE:    CALL FIXED
 !   INPUT ARGUMENT LIST:
@@ -130,7 +131,7 @@
            ENDDO
          ENDDO
          ID(1:25) = 0
-         if(grib=='grib2') then
+          if(grib=='grib2') then
           cfld=cfld+1
           fld_info(cfld)%ifld=IAVBLFLD(IGET(051))
           datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -162,7 +163,7 @@
            ENDDO
          ENDDO
          ID(1:25) = 0
-         if(grib=='grib2') then
+          if(grib=='grib2') then
           cfld=cfld+1
           fld_info(cfld)%ifld=IAVBLFLD(IGET(053))
           datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -335,7 +336,7 @@
           ENDDO
           ID(1:25) = 0
           ID(02)=133 ! Parameter Table 133
-          if(grib=='grib2') then
+        if(grib=='grib2') then
            cfld=cfld+1
            fld_info(cfld)%ifld=IAVBLFLD(IGET(248))
            datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)

@@ -35,6 +35,7 @@
 !                         and some cosmetic changes
 !   14-02-26  S Moorthi - threading datapd assignment
 !   14-11-26  S Moorthi - cleanup and some bug fix (may be?)
+!   20-03-25  J MENG    - remove grib1
 !     
 ! USAGE:    CALL SURFCE
 !   INPUT ARGUMENT LIST:
@@ -99,6 +100,7 @@
                             lp1, imp_physics, me, asrfc, tsrfc, pt, pdtop,   &
                             mpi_comm_comp, im, jm
       use rqstfld_mod, only: iget, lvls, id, iavblfld, lvlsxml
+      use CALRH_MODULE
 !- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        implicit none
 !

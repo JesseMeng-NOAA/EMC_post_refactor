@@ -41,7 +41,7 @@
       use masks,        only: lmh, dx, dy
       use params_mod,   only: d00
       use ctlblk_mod,   only: lm, jsta_2l, jend_2u, jsta_m, jend_m,   &
-                              global, spval, im, jm, me
+                              global, spval, im, jm
       use gridspec_mod, only: gridtype
 
       implicit none

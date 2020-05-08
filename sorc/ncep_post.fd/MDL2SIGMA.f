@@ -20,6 +20,7 @@
 !   02-07-29  H CHUANG - ADD UNDERGROUND FIELDS AND MEMBRANE SLP FOR WRF
 !   04-11-24  H CHUANG - ADD FERRIER'S HYDROMETEOR FIELD
 !   11-02064  J WANG - ADD GRIB2 option
+!   20-03-25  J MENG - remove grib1
 !  
 ! USAGE:    CALL MDL2P
 !   INPUT ARGUMENT LIST:
@@ -63,6 +64,7 @@
                                jm, im_jm
       use rqstfld_mod,   only: iget, lvls, id, iavblfld, lvlsxml
       use gridspec_mod,  only :gridtype
+      use CALRH_MODULE
 !- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        implicit none
 !     
@@ -313,7 +315,7 @@
              ENDIF
            ENDDO
            ENDDO
-          if(grib=='grib2') then
+          if(grib=='grib2')then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(205))
             datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -330,7 +332,7 @@
              GRID1(I,J)=AKH(I,J)
            ENDDO
            ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(243))
             datapd(1:im,1:jend-jsta+1,cfld)=GRID1(1:im,jsta:jend)
@@ -933,7 +935,7 @@
               ENDIF
             ENDDO
             ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(205))
             fld_info(cfld)%lvl=LVLSXML(LP+1,IGET(205))
@@ -954,7 +956,7 @@
 	     IF(LP.EQ.(LSIG+1))GRID1(I,J)=0.0  !! NO SLIP ASSUMTION FOR CMAQ
            ENDDO
            ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(243))
             fld_info(cfld)%lvl=LVLSXML(LP+1,IGET(243))
@@ -973,7 +975,7 @@
                GRID1(I,J)=TSL(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(206))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(206))
@@ -993,7 +995,7 @@
                GRID1(I,J)=PTSIGO+ASIGO(LP)*(PINT(I,J,LLMH+1)-PTSIGO)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(216))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(216))
@@ -1012,7 +1014,7 @@
              ENDDO
              ENDDO
              CALL BOUND(GRID1,H1M12,H99999)
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(207))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(207))
@@ -1030,7 +1032,7 @@
                GRID1(I,J)=OSL(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(210))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(210))
@@ -1049,7 +1051,7 @@
                GRID2(I,J)=VSL(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(208))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(208))
@@ -1071,7 +1073,7 @@
                GRID1(I,J)=Q2SL(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(217))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(217))
@@ -1089,7 +1091,7 @@
                GRID1(I,J)=QW1(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(211))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(211))
@@ -1107,7 +1109,7 @@
                GRID1(I,J)=QI1(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(212))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(212))
@@ -1124,7 +1126,7 @@
                GRID1(I,J)=QR1(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(213))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(213))
@@ -1141,7 +1143,7 @@
                GRID1(I,J)=QS1(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(214))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(214))
@@ -1158,7 +1160,7 @@
                GRID1(I,J)=QG1(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(255))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(255))
@@ -1175,7 +1177,7 @@
                GRID1(I,J)=C1D(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(215))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(215))
@@ -1192,7 +1194,7 @@
                GRID1(I,J)=CFRSIG(I,J)
              ENDDO
              ENDDO
-          if(grib=="grib2" )then
+	  if(grib=="grib2" )then
             cfld=cfld+1
             fld_info(cfld)%ifld=IAVBLFLD(IGET(222))
             fld_info(cfld)%lvl=LVLSXML(LP,IGET(222))

@@ -13,6 +13,8 @@
 ! PROGRAM HISTORY LOG:
 !   05-09-20  H CHUANG AND B ZHOU - ADD WIND DIFFERENCES OVER 2000 FT
 !   11-03-04  J WANG  - ADD grib2 option
+!   19-10-30  B CUI - REMOVE "GOTO" STATEMENT
+!   20-03-25  J MENG - remove grib1 
 !     
 ! USAGE:    CALL MDL2P
 !   INPUT ARGUMENT LIST:
@@ -59,6 +61,7 @@
                             jsta_2l, jend_2u, im, jm, jsta, jend, imp_physics
       use rqstfld_mod,  only: iget, lvls, iavblfld, lvlsxml, id
       use gridspec_mod, only: gridtype
+      use CALRH_MODULE
 !- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       implicit none
       INCLUDE "mpif.h"
@@ -111,6 +114,8 @@
 !     SET TOTAL NUMBER OF POINTS ON OUTPUT GRID.
 !
 !---------------------------------------------------------------
+
+
       ZAGL(1)  = 4000.
       ZAGL(2)  = 1000.
       ZAGL2(1) = 609.6  ! 2000 ft
@@ -1192,7 +1197,8 @@
                   ZDUM=ZMID(I,J,L)-ZINT(I,J,LLMH+1)
                   IF(ZDUM >= ZAGL2(LP))THEN
                     NL1X(I,J)=L+1
-                    GO TO 40
+!                   GO TO 40
+                    exit     
                   ENDIF
                 ENDDO
    40           CONTINUE
@@ -1426,7 +1432,8 @@
                   ZDUM = ZMID(I,J,L)-ZINT(I,J,LLMH+1)
                   IF(ZDUM >= ZAGL3(LP))THEN
                     NL1X(I,J) = L+1
-                    GO TO 50
+!                   GO TO 50
+                    exit     
                   ENDIF
                 ENDDO
    50           CONTINUE
@@ -1534,7 +1541,7 @@
             ENDDO
             ID(1:25)=0
             ID(11) = NINT(ZAGL3(LP))
-             if(grib=="grib2" )then
+            if(grib=="grib2" )then
               cfld=cfld+1
               fld_info(cfld)%ifld=IAVBLFLD(IGET(411))
               fld_info(cfld)%lvl=LVLSXML(LP,IGET(411))
@@ -1550,7 +1557,7 @@
             ENDDO
             ID(1:25)=0
             ID(11) = NINT(ZAGL3(LP))
-             if(grib=="grib2" )then
+            if(grib=="grib2" )then
               cfld=cfld+1
               fld_info(cfld)%ifld=IAVBLFLD(IGET(412))
               fld_info(cfld)%lvl=LVLSXML(LP,IGET(412))
@@ -1566,7 +1573,7 @@
             ENDDO
             ID(1:25)=0
             ID(11) = NINT(ZAGL3(LP))
-             if(grib=="grib2" )then
+            if(grib=="grib2" )then
               cfld=cfld+1
               fld_info(cfld)%ifld=IAVBLFLD(IGET(413))
               fld_info(cfld)%lvl=LVLSXML(LP,IGET(413))

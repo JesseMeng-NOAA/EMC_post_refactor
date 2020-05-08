@@ -55,7 +55,7 @@
 
 ! smooth 700 mb temperature first
        if(MAPTYPE.EQ.6) then
-         if (grib=='grib2') then
+         if(grib=='grib2') then
             dxm=(DXVAL / 360.)*(ERAD*2.*pi)/1.d6  ! [mm]
          endif
        else

@@ -44,6 +44,7 @@
 !   17-06-01  Y Mao - ADD FD levels for GTG(EDPARM CATEDR MWTURB) and allow 
 !                     levels input from control file
 !   19-09-03  J Meng - ADD CAPE related variables for HRRR
+!   20-03-24  J Meng - remove grib1
 !     
 ! USAGE:    CALL MISCLN
 !   INPUT ARGUMENT LIST:
@@ -90,6 +91,7 @@
                             jsta_2l, jend_2u, MODELNAME
       use rqstfld_mod, only: iget, lvls, id, iavblfld, lvlsxml
       use grib2_module, only: pset
+      use CALRH_MODULE
 !- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        implicit none
 !
