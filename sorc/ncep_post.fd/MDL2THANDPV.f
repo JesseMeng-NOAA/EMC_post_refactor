@@ -45,9 +45,10 @@
       use physcons_post, only: con_eps, con_epsm1
       use params_mod, only: dtr, small, erad, d608, rhmin
       use CTLBLK_mod, only: spval, lm, jsta_2l, jend_2u, jsta_2l, grib, cfld, datapd, fld_info,&
-              im, jm, jsta, jend, jsta_m, jend_m, modelname, global,gdsdegr,me
+              im, jm, jsta, jend, jsta_m, jend_m, modelname, global,gdsdegr, me
       use RQSTFLD_mod, only: iget, lvls, id, iavblfld, lvlsxml
       use gridspec_mod, only: gridtype,dyval
+      use diff_module
 !- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       implicit none
 !     
@@ -479,7 +480,9 @@
   
          ENDIF    !regional models and A-grid end here
 !-----------------------------------------------------------------
-        ELSE IF (GRIDTYPE == 'B')THEN
+        ELSE 
+
+        IF (GRIDTYPE == 'B')THEN
           DO L=1,LM
             CALL EXCH(VH(1:IM,JSTA_2L:JEND_2U,L))
           END DO
@@ -490,6 +493,9 @@
                ip1 = i + 1
                im1 = i - 1
                DO L=1,LM
+
+      CALL DVDXDUDY(UH(:,:,L),VH(:,:,L))
+
                  DUM1D5(L) = T(I,J,L)*(1.+D608*Q(I,J,L))                 !TV
                  ES        = MIN(FPVSNEW(T(I,J,L)),PMID(I,J,L))
                  QSTL      = CON_EPS*ES/(PMID(I,J,L)+CON_EPSM1*ES)
@@ -498,12 +504,15 @@
                  DUM1D3(L)  = (T(ip1,J,L)   - T(im1,J,L))    * wrk2(i,j) !dt/dx
                  DUM1D2(L)  = (PMID(I,J+1,L)-PMID(I,J-1,L))  * wrk3(i,j) !dp/dy
                  DUM1D4(L)  = (T(I,J+1,L)-T(I,J-1,L))        * wrk3(i,j) !dt/dy
-                 DVDX       = (0.5*(VH(I,J,L)+VH(I,J-1,L))-0.5*(VH(IM1,J,L) &
-                            + VH(IM1,J-1,L)))*wrk2(i,j)*2.0
-                 DUDY       = (0.5*(UH(I,J,L)+UH(I-1,J,L))-0.5*(UH(I,J-1,L) &
-                            + UH(I-1,J-1,L)))*wrk3(i,j)*2.0
-                 UAVG       = 0.25*(UH(IM1,J-1,L)+UH(IM1,J,L)               &
-     &                      + UH(I,J-1,L)+UH(I,J,L))
+!                 DVDX       = (0.5*(VH(I,J,L)+VH(I,J-1,L))-0.5*(VH(IM1,J,L) &
+!                            + VH(IM1,J-1,L)))*wrk2(i,j)*2.0
+!                 DUDY       = (0.5*(UH(I,J,L)+UH(I-1,J,L))-0.5*(UH(I,J-1,L) &
+!                            + UH(I-1,J-1,L)))*wrk3(i,j)*2.0
+!                 UAVG       = 0.25*(UH(IM1,J-1,L)+UH(IM1,J,L)               &
+!     &                      + UH(I,J-1,L)+UH(I,J,L))
+               DVDX   = DDVDX(I,J)
+               DUDY   = DDUDY(I,J)
+               UAVG   = UUAVG(I,J)
 !  is there a (f+tan(phi)/erad)*u term?
                  DUM1D6(L)  = DVDX - DUDY + F(I,J) + UAVG*TAN(TPHI)/ERAD !vort
 
@@ -569,6 +578,9 @@
               ip1 = i + 1
               im1 = i - 1
               DO L=1,LM
+
+      CALL DVDXDUDY(UH(:,:,L),VH(:,:,L))
+
                 DUM1D5(L)=T(I,J,L)*(1.+D608*Q(I,J,L)) !TV
                 ES=FPVSNEW(T(I,J,L))
                 ES=MIN(ES,PMID(I,J,L))
@@ -578,9 +590,12 @@
                 DUM1D3(L) = (TUV(i+ihe,J,L) - TUV(i+ihw,J,L)) * wrk2(i,j)    !dt/dx
                 DUM1D2(L) = (PMIDUV(i,J+1,L)- PMIDUV(i,J-1,L))*wrk3(i,j)!dp/dy
                 DUM1D4(L)=  (TUV(i,J+1,L)- TUV(i,J-1,L))*wrk3(i,j)!dt/dy
-                DVDX=(VH(I+IHE,J,L)-VH(I+IHW,J,L))* wrk2(i,j)
-                DUDY=(UH(I,J+1,L)-UH(I,J-1,L))* wrk3(i,j)
-                UAVG=0.25*(UH(I+IHE,J,L)+UH(I+IHW,J,L)+UH(I,J-1,L)+UH(I,J+1,L))
+!                DVDX=(VH(I+IHE,J,L)-VH(I+IHW,J,L))* wrk2(i,j)
+!                DUDY=(UH(I,J+1,L)-UH(I,J-1,L))* wrk3(i,j)
+!                UAVG=0.25*(UH(I+IHE,J,L)+UH(I+IHW,J,L)+UH(I,J-1,L)+UH(I,J+1,L))
+               DVDX   = DDVDX(I,J)
+               DUDY   = DDUDY(I,J)
+               UAVG   = UUAVG(I,J)
 !  is there a (f+tan(phi)/erad)*u term?
                 DUM1D6(L)=DVDX-DUDY+F(I,J)+UAVG*TAN(TPHI)/ERAD !vort
               END DO
@@ -635,7 +650,7 @@
               END IF
             END DO
           END DO
-
+        END IF
         END IF ! for different grids
 
 
