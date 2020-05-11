@@ -92,6 +92,7 @@
       use rqstfld_mod, only: iget, lvls, id, iavblfld, lvlsxml
       use grib2_module, only: pset
       use CALRH_MODULE
+      use CALCAPE_MODULE
 !- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        implicit none
 !

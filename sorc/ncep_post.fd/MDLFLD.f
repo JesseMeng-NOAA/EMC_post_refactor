@@ -97,6 +97,7 @@
       use rqstfld_mod, only: iget, id, lvls, iavblfld, lvlsxml
       use gridspec_mod, only: gridtype,maptype,dxval
       use CALRH_MODULE
+      use CALCAPE_MODULE
 !     
 !- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
        implicit none
